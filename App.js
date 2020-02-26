@@ -1,13 +1,29 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
 import { Constants } from 'expo';
-import { Vibrate } from './utils/vibrate';
+import { vibrate } from './utils';
 
-function RoundButton({ title, background, color }) {
+export default class App extends React.Component {
+  render() {
+    return (
+      <View style={styles.container}>
+        <Counter />
+      </View>
+    );
+  }
+}
+
+function RoundButton({ title, background, color, onPress }) {
   return (
-    <View style={[ styles.button, { backgroundColor: background }]}>
-      <Text style={[ styles.buttonText, { color }]}>{title}</Text>
-    </View>
+    <TouchableOpacity 
+      onPress={onPress} 
+      style={[ styles.button, { backgroundColor: background }]}
+      activeOpacity={0.7}
+      >
+      <View style={styles.buttonBorder}>
+        <Text style={[ styles.buttonText, { color }]}>{title}</Text>
+      </View>
+    </TouchableOpacity>
   )
 }
 
@@ -17,21 +33,6 @@ function ButtonsRow({ children }) {
   );
 }
 
-export default class App extends React.Component {
-  render() {
-    return (
-      <View style={styles.container}>
-        <Counter />
-        <ButtonsRow>
-          <RoundButton style={styles.buttonText} title="Start" color="#00ca09" background="#28542a" />
-          <RoundButton style={styles.buttonText} title="Stop" color="#ff4848" background="#760000" />
-          <RoundButton style={styles.buttonText} title="Clear" color="#91c4ff" background="#445e7c" />
-        </ButtonsRow>
-      </View>
-    );
-  }
-}
-
 class Counter extends React.Component{
   constructor() {
     super();
@@ -39,22 +40,88 @@ class Counter extends React.Component{
       workMinutes: 25,
       workSeconds: 0,
       breakMinutes: 5,
-      breakSeconds: 0
+      breakSeconds: 0,
+      togglePauseStart: true,
+      isWorkTimer: true,
     }
   }
 
+  startTimer() {
+    this.secondInterval = setInterval(this.countdownSeconds, 1000);
+  }
+
+  pauseTimer() {
+    clearInterval(this.secondInterval);
+  }
+
+  countdownSeconds = () => {
+    if (this.state.isWorkTimer) {
+      if (this.state.workSeconds === 0) {
+        this.setState({ workSeconds: 60 })
+      }
+
+      this.setState(previousState => ({
+        workSeconds: previousState.workSeconds - 1,
+      }))
+
+      if (this.state.workMinutes === 0 && this.state.workSeconds === 0) {
+        vibrate()
+      }
+    }
+  }
+
+  togglePauseStart = () => {
+    this.setState(prevState => ({
+      togglePauseStart: !prevState.togglePauseStart,
+    }));
+    if (this.state.togglePauseStart) {
+      this.startTimer();
+    } else {
+      this.pauseTimer();
+    }
+  };
+
+  resetTimer = () => {
+    clearInterval(this.secondInterval);
+    this.setState({ workMinutes: 25 });
+    this.setState({ workSeconds: 0 });
+    this.setState({ breakMinutes: 5 });
+    this.setState({ breakSeconds: 0 });
+  }
+
   render() {
-    return(
-      <View>
-        <Text style={styles.workLabel}>Get to Work</Text>
-        <Text style={styles.timer}>
-        {this.state.workMinutes}:{this.state.workSeconds} 
-        </Text>
-      </View>
-    );
+    if (this.state.isWorkTimer) {
+      return(
+        <View>
+          <Text style={styles.workLabel}>Get to Work</Text>
+          <Text style={styles.clock}>
+          {this.state.workMinutes}:{this.state.workSeconds} 
+          </Text>
+          <ButtonsRow>
+            <RoundButton style={styles.buttonText} title="Start" color="#00ca09" background="#28542a" onPress={this.togglePauseStart} />
+            <RoundButton style={styles.buttonText} title="Stop" color="#ff4848" background="#760000" onPress={this.togglePauseStart} />
+            <RoundButton style={styles.buttonText} title="Reset" color="#91c4ff" background="#445e7c" onPress={this.resetTimer} />
+          </ButtonsRow>
+        </View>
+      );
+    } else {
+      return(
+        <View>
+          <Text style={styles.workLabel}>Take a Break</Text>
+          <Text style={styles.clock}>
+          {this.state.breakMinutes}:{this.state.breakSeconds} 
+          </Text>
+          <ButtonsRow>
+            <RoundButton style={styles.buttonText} title="Start" color="#00ca09" background="#28542a" onPress={this.togglePauseStart} />
+            <RoundButton style={styles.buttonText} title="Stop" color="#ff4848" background="#760000" onPress={this.togglePauseStart} />
+            <RoundButton style={styles.buttonText} title="Reset" color="#91c4ff" background="#445e7c" onPress={this.resetTimer}/>
+          </ButtonsRow>
+        </View>
+      );
+    }
   }
 }
-
+ 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -63,7 +130,7 @@ const styles = StyleSheet.create({
     paddingTop: 175,
     paddingHorizontal: 20,
   },
-  timer: {
+  clock: {
     fontSize: 100,
     color: "white",
     textAlign: 'center',
@@ -88,7 +155,15 @@ const styles = StyleSheet.create({
   buttonsRow: {
     flexDirection: "row",
     alignSelf: "stretch",
-    justifyContent: "space-evenly",
+    justifyContent: "space-around",
     marginTop: 10,
+  },
+  buttonBorder: {
+    height: 76,
+    width: 76,
+    borderRadius: 38,
+    borderWidth: 2,
+    alignItems: "center",
+    justifyContent: "center",
   }
 });

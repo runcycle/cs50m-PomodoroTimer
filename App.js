@@ -169,6 +169,7 @@ class Counter extends React.Component{
         </View>
       );
     }
+    //////////////Text Input Here?
   }
 }
  

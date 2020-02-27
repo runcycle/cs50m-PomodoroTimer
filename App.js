@@ -1,6 +1,5 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
-import { Constants } from 'expo';
 import { vibrate } from './utils';
 
 export default class App extends React.Component {
@@ -46,6 +45,68 @@ class Counter extends React.Component{
     }
   }
 
+///////////////Timer Logic
+  toggleTimerType = () => {
+    this.setState(previousState => ({
+      isWorkTimer: !previousState.isWorkTimer
+    }));
+    clearInterval(this.secondInterval);
+
+    this.setState({ workMinutes: 25 });
+    this.setState({ workSeconds: 0 });
+    this.setState({ breakMinutes: 5 });
+    this.setState({ breakSeconds: 0 });
+
+    this.startTimer();
+  }
+
+  countdownSeconds = () => {
+    if (this.state.isWorkTimer) {
+      if (this.state.workSeconds === 0) {
+        this.setState({ workSeconds: 60 }),
+        this.countdownWorkMinutes();
+      }
+
+      this.setState(previousState => ({
+        workSeconds: previousState.workSeconds - 1
+      }))
+
+      if (this.state.workMinutes === 0 && this.state.workSeconds === 0) {
+        this.toggleTimerType();
+        vibrate();
+      }
+    } else {
+      if (!this.state.isWorkTimer) {
+        if (this.state.breakSeconds === 0) {
+          this.setState({ breakSeconds: 60 }),
+          this.countdownBreakMinutes();
+        }
+  
+        this.setState(previousState => ({
+          breakSeconds: previousState.breakSeconds - 1
+        }))
+
+        if (this.state.breakMinutes === 0 && this.state.breakSeconds === 0) {
+          this.toggleTimerType();
+          vibrate();
+        }
+      }
+    }
+  }
+
+  countdownWorkMinutes = () => {
+    this.setState(previousState => ({
+      workMinutes: previousState.workMinutes - 1
+    }));
+  }
+
+  countdownBreakMinutes = () => {
+    this.setState(previousState => ({
+      breakMinutes: previousState.breakMinutes - 1
+    }));
+  }
+
+/////////////Timer Controls
   startTimer() {
     this.secondInterval = setInterval(this.countdownSeconds, 1000);
   }
@@ -54,25 +115,9 @@ class Counter extends React.Component{
     clearInterval(this.secondInterval);
   }
 
-  countdownSeconds = () => {
-    if (this.state.isWorkTimer) {
-      if (this.state.workSeconds === 0) {
-        this.setState({ workSeconds: 60 })
-      }
-
-      this.setState(previousState => ({
-        workSeconds: previousState.workSeconds - 1,
-      }))
-
-      if (this.state.workMinutes === 0 && this.state.workSeconds === 0) {
-        vibrate()
-      }
-    }
-  }
-
   togglePauseStart = () => {
-    this.setState(prevState => ({
-      togglePauseStart: !prevState.togglePauseStart,
+    this.setState(previousState => ({
+      togglePauseStart: !previousState.togglePauseStart,
     }));
     if (this.state.togglePauseStart) {
       this.startTimer();
@@ -83,19 +128,23 @@ class Counter extends React.Component{
 
   resetTimer = () => {
     clearInterval(this.secondInterval);
+
     this.setState({ workMinutes: 25 });
     this.setState({ workSeconds: 0 });
     this.setState({ breakMinutes: 5 });
     this.setState({ breakSeconds: 0 });
+    this.setState({ isWorkTimer: true, togglePauseStart: true })
   }
 
   render() {
+    const pad = (n) => n < 10 ? "0" + n : n
     if (this.state.isWorkTimer) {
       return(
         <View>
           <Text style={styles.workLabel}>Get to Work</Text>
           <Text style={styles.clock}>
-          {this.state.workMinutes}:{this.state.workSeconds} 
+          {pad(this.state.workMinutes)}:
+          {pad(this.state.workSeconds)} 
           </Text>
           <ButtonsRow>
             <RoundButton style={styles.buttonText} title="Start" color="#00ca09" background="#28542a" onPress={this.togglePauseStart} />
@@ -109,12 +158,13 @@ class Counter extends React.Component{
         <View>
           <Text style={styles.workLabel}>Take a Break</Text>
           <Text style={styles.clock}>
-          {this.state.breakMinutes}:{this.state.breakSeconds} 
+          {pad(this.state.breakMinutes)}:
+          {pad(this.state.breakSeconds)}
           </Text>
           <ButtonsRow>
             <RoundButton style={styles.buttonText} title="Start" color="#00ca09" background="#28542a" onPress={this.togglePauseStart} />
             <RoundButton style={styles.buttonText} title="Stop" color="#ff4848" background="#760000" onPress={this.togglePauseStart} />
-            <RoundButton style={styles.buttonText} title="Reset" color="#91c4ff" background="#445e7c" onPress={this.resetTimer}/>
+            <RoundButton style={styles.buttonText} title="Reset" color="#91c4ff" background="#445e7c" onPress={this.resetTimer} />
           </ButtonsRow>
         </View>
       );
@@ -155,7 +205,7 @@ const styles = StyleSheet.create({
   buttonsRow: {
     flexDirection: "row",
     alignSelf: "stretch",
-    justifyContent: "space-around",
+    justifyContent: "space-between",
     marginTop: 10,
   },
   buttonBorder: {

@@ -42,6 +42,10 @@ class Counter extends React.Component{
       breakSeconds: 0,
       togglePauseStart: true,
       isWorkTimer: true,
+      customWorkMinutes: 25,
+      customWorkSeconds: 0,
+      customBreakMinutes: 5,
+      customBreakSeconds: 0,
     }
   }
 
@@ -136,6 +140,13 @@ class Counter extends React.Component{
     this.setState({ isWorkTimer: true, togglePauseStart: true })
   }
 
+  editWorkMinutes(mins) {
+    this.setState({
+      workMinutes: mins,
+      customWorkMinutes: mins
+    });
+  }
+
   render() {
     const pad = (n) => n < 10 ? "0" + n : n
     if (this.state.isWorkTimer) {
@@ -151,6 +162,15 @@ class Counter extends React.Component{
             <RoundButton style={styles.buttonText} title="Stop" color="#ff4848" background="#760000" onPress={this.togglePauseStart} />
             <RoundButton style={styles.buttonText} title="Reset" color="#91c4ff" background="#445e7c" onPress={this.resetTimer} />
           </ButtonsRow>
+          <Text style={styles.textLabel}>Edit Work Minutes:</Text>
+          <View style={styles.editWorkMinutes}>
+            <TextInput style={styles.textInput} 
+                returnKeyType="done"
+                keyboardType="number-pad"
+                placeholder={`${this.state.customWorkMinutes}`}
+                onChangeText={(mins) => this.editWorkMinutes(mins)} 
+              />
+          </View>
         </View>
       );
     } else {
@@ -169,7 +189,6 @@ class Counter extends React.Component{
         </View>
       );
     }
-    //////////////Text Input Here?
   }
 }
  
@@ -216,5 +235,24 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     alignItems: "center",
     justifyContent: "center",
+  },
+  textLabel: {
+    fontSize: 20,
+    color: "white",
+    paddingTop: 20,
+    textAlign: "center"
+  },
+  textInput: {
+    width: 100,
+    fontSize: 20,
+    color: "white",
+    textAlign: "center",
+    padding: 5,
+    borderColor: "white",
+    borderWidth: 2,
+  },
+  editWorkMinutes: {
+    alignItems: "center",
+    paddingTop: 10,
   }
 });

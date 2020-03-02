@@ -52,15 +52,10 @@ class Counter extends React.Component{
 ///////////////Timer Logic
   toggleTimerType = () => {
     this.setState(previousState => ({
-      isWorkTimer: !previousState.isWorkTimer
+      isWorkTimer: !previousState.isWorkTimer,
     }));
     clearInterval(this.secondInterval);
-
-    this.setState({ workMinutes: 25 });
-    this.setState({ workSeconds: 0 });
-    this.setState({ breakMinutes: 5 });
-    this.setState({ breakSeconds: 0 });
-
+   
     this.startTimer();
   }
 
@@ -139,11 +134,22 @@ class Counter extends React.Component{
     this.setState({ breakSeconds: 0 });
     this.setState({ isWorkTimer: true, togglePauseStart: true })
   }
-
+///////////Need to update new state key with original work minute length
   editWorkMinutes(mins) {
     this.setState({
       workMinutes: mins,
-      customWorkMinutes: mins
+      workSeconds: 0,
+      customWorkMinutes: mins,
+      customWorkSeconds: 0
+    });
+  }
+
+  editBreakMinutes(mins) {
+    this.setState({
+      breakMinutes: mins,
+      breakSeconds: 0,
+      customBreakMinutes: mins,
+      customBreakSeconds: 0
     });
   }
 
@@ -171,6 +177,15 @@ class Counter extends React.Component{
                 onChangeText={(mins) => this.editWorkMinutes(mins)} 
               />
           </View>
+          <Text style={styles.textLabel}>Edit Break Minutes:</Text>
+          <View style={styles.editWorkMinutes}>
+            <TextInput style={styles.textInput} 
+                returnKeyType="done"
+                keyboardType="number-pad"
+                placeholder={`${this.state.customBreakMinutes}`}
+                onChangeText={(mins) => this.editBreakMinutes(mins)} 
+              />
+          </View>
         </View>
       );
     } else {
@@ -186,6 +201,24 @@ class Counter extends React.Component{
             <RoundButton style={styles.buttonText} title="Stop" color="#ff4848" background="#760000" onPress={this.togglePauseStart} />
             <RoundButton style={styles.buttonText} title="Reset" color="#91c4ff" background="#445e7c" onPress={this.resetTimer} />
           </ButtonsRow>
+          <Text style={styles.textLabel}>Edit Work Minutes:</Text>
+          <View style={styles.editWorkMinutes}>
+            <TextInput style={styles.textInput} 
+                returnKeyType="done"
+                keyboardType="number-pad"
+                placeholder={`${this.state.customWorkMinutes}`}
+                onChangeText={(mins) => this.editWorkMinutes(mins)} 
+              />
+          </View>
+          <Text style={styles.textLabel}>Edit Break Minutes:</Text>
+          <View style={styles.editWorkMinutes}>
+            <TextInput style={styles.textInput} 
+                returnKeyType="done"
+                keyboardType="number-pad"
+                placeholder={`${this.state.customBreakMinutes}`}
+                onChangeText={(mins) => this.editBreakMinutes(mins)} 
+              />
+          </View>
         </View>
       );
     }
@@ -197,14 +230,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000000',
     alignItems: 'center',
-    paddingTop: 175,
+    paddingTop: 125,
     paddingHorizontal: 20,
   },
   clock: {
     fontSize: 100,
     color: "white",
     textAlign: 'center',
-    paddingBottom: 20
+    paddingBottom: 10
   },
   workLabel: {
     fontSize: 30,
@@ -226,7 +259,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignSelf: "stretch",
     justifyContent: "space-between",
-    marginTop: 10,
+    marginTop: 5,
   },
   buttonBorder: {
     height: 76,
@@ -239,7 +272,7 @@ const styles = StyleSheet.create({
   textLabel: {
     fontSize: 20,
     color: "white",
-    paddingTop: 20,
+    paddingTop: 30,
     textAlign: "center"
   },
   textInput: {
@@ -247,7 +280,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: "white",
     textAlign: "center",
-    padding: 5,
+    padding: 0,
     borderColor: "white",
     borderWidth: 2,
   },

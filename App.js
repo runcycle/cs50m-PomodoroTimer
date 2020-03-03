@@ -55,7 +55,7 @@ class Counter extends React.Component{
       isWorkTimer: !previousState.isWorkTimer,
     }));
     clearInterval(this.secondInterval);
-   
+
     this.startTimer();
   }
 
@@ -86,8 +86,8 @@ class Counter extends React.Component{
         }))
 
         if (this.state.breakMinutes === 0 && this.state.breakSeconds === 0) {
-          this.toggleTimerType();
           vibrate();
+          clearInterval(this.secondInterval);
         }
       }
     }
@@ -134,13 +134,13 @@ class Counter extends React.Component{
     this.setState({ breakSeconds: 0 });
     this.setState({ isWorkTimer: true, togglePauseStart: true })
   }
-///////////Need to update new state key with original work minute length
+
   editWorkMinutes(mins) {
     this.setState({
       workMinutes: mins,
       workSeconds: 0,
       customWorkMinutes: mins,
-      customWorkSeconds: 0
+      customWorkSeconds: 0,
     });
   }
 
@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000000',
     alignItems: 'center',
-    paddingTop: 125,
+    paddingTop: 75,
     paddingHorizontal: 20,
   },
   clock: {

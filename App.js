@@ -12,6 +12,7 @@ export default class App extends React.Component {
   }
 }
 
+// Button Template
 function RoundButton({ title, background, color, onPress }) {
   return (
     <TouchableOpacity 
@@ -26,6 +27,7 @@ function RoundButton({ title, background, color, onPress }) {
   )
 }
 
+// Row Template
 function ButtonsRow({ children }) {
   return (
     <View style={ styles.buttonsRow }>{children}</View>
@@ -49,7 +51,7 @@ class Counter extends React.Component{
     }
   }
 
-///////////////Timer Logic
+//Timer Logic
   toggleTimerType = () => {
     this.setState(previousState => ({
       isWorkTimer: !previousState.isWorkTimer,
@@ -105,7 +107,7 @@ class Counter extends React.Component{
     }));
   }
 
-/////////////Timer Controls
+  //Timer Controls
   startTimer() {
     this.secondInterval = setInterval(this.countdownSeconds, 1000);
   }
@@ -228,13 +230,14 @@ class Counter extends React.Component{
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    alignSelf: "stretch",
     backgroundColor: '#000000',
     alignItems: 'center',
     paddingTop: 75,
-    paddingHorizontal: 20,
+    paddingHorizontal: 10,
   },
   clock: {
-    fontSize: 100,
+    fontSize: 120,
     color: "white",
     textAlign: 'center',
     paddingBottom: 10
@@ -243,7 +246,7 @@ const styles = StyleSheet.create({
     fontSize: 30,
     color: "#b5d7ff",
     textAlign: 'center',
-    paddingBottom: 10,
+    paddingBottom: 0,
   },
   button: {
     width: 80,
@@ -260,6 +263,7 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     justifyContent: "space-between",
     marginTop: 5,
+    paddingHorizontal: 20
   },
   buttonBorder: {
     height: 76,
